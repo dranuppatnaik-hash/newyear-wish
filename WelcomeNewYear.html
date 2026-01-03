@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>New Year 2026 Wish</title>
+
+  <style>
+    :root{
+      --overlay: rgba(0,0,0,.78);
+      --border: rgba(255,255,255,.14);
+      --text: rgba(255,255,255,.95);
+      --muted: rgba(255,255,255,.72);
+    }
+
+    body{
+      margin:0;
+      height:100vh;
+      overflow:hidden;
+      background: var(--overlay);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    /* Dialog look (modal-like) */
+    .dialog{
+      position: relative;
+      width: min(640px, 92vw);
+      padding: 26px 22px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(22,22,22,.96), rgba(12,12,12,.92));
+      border: 1px solid var(--border);
+      box-shadow: 0 26px 70px rgba(0,0,0,.7);
+      text-align:center;
+      color: var(--text);
+      z-index: 5;
+      animation: popIn .5s ease;
+      user-select:none;
+      backdrop-filter: blur(6px);
+    }
+
+    h1{ margin: 0 0 10px; font-size: clamp(22px, 5.6vw, 30px); letter-spacing: .2px; }
+    p{ margin: 6px 0; font-size: clamp(15px, 3.8vw, 17px); color: var(--muted); line-height: 1.35; }
+    .small{ margin-top: 12px; font-size: 12.5px; opacity: .75; }
+
+    .pill{
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      margin-top: 10px; padding: 6px 12px;
+      border-radius: 999px; border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      font-size: 12.5px; color: rgba(255,255,255,.78);
+    }
+
+    .fade-out{ animation: fadeOut 1.2s forwards; }
+    .fade-in{ animation: fadeIn 1.2s forwards; }
+
+    @keyframes popIn{ from{ transform:scale(.86); opacity:0; } to{ transform:scale(1); opacity:1; } }
+    @keyframes fadeOut{ to{ opacity:0; transform:scale(.96); } }
+    @keyframes fadeIn{ from{ opacity:0; transform:scale(1.04); } to{ opacity:1; } }
+
+    /* Fireworks */
+    canvas{ position:absolute; inset:0; width:100%; height:100%; z-index:1; }
+
+    /* Tap banner for autoplay restriction */
+    .tap-banner{
+      position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,.40);
+      border: 1px solid rgba(255,255,255,.16);
+      color: rgba(255,255,255,.92);
+      padding: 8px 12px; border-radius: 999px;
+      font-size: 12.5px; z-index: 10; display:none;
+    }
+
+    /* Floating items (tools/books) */
+    .item{
+      position:absolute;
+      bottom:-90px;
+      font-size: 20px;
+      opacity: 0;
+      z-index: 3;
+      white-space: nowrap;
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,.45));
+      transition: opacity .6s ease;
+      will-change: transform;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(6px);
+      pointer-events:none;
+    }
+
+    @keyframes slowBob {
+      0%   { transform: translateY(0); }
+      50%  { transform: translateY(-78vh); }
+      100% { transform: translateY(0); }
+    }
+
+    @keyframes sway {
+      0%   { margin-left: 0px; }
+      25%  { margin-left: 10px; }
+      50%  { margin-left: 0px; }
+      75%  { margin-left: -10px; }
+      100% { margin-left: 0px; }
+    }
+
+    .spark{
+      position:absolute; left: 50%; top: -14px;
+      transform: translateX(-50%);
+      font-size: 16px; opacity: 0;
+      animation: sparkPop 1.1s ease forwards;
+      pointer-events:none;
+    }
+    @keyframes sparkPop{
+      0%   { opacity:0; transform: translateX(-50%) translateY(6px) scale(.8); }
+      30%  { opacity:1; transform: translateX(-50%) translateY(0) scale(1.08); }
+      100% { opacity:0; transform: translateX(-50%) translateY(-10px) scale(.9); }
+    }
+
+    /* Resolutions */
+    .res{
+      text-align:left;
+      margin: 10px auto 0;
+      width: min(560px, 100%);
+    }
+    .res-item{
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity .6s ease, transform .6s ease;
+      margin: 9px 0;
+      color: rgba(255,255,255,.90);
+      font-size: clamp(14.5px, 3.6vw, 16px);
+    }
+    .res-item.show{ opacity: 1; transform: translateY(0); }
+
+    .footer-note{ margin-top: 10px; font-size: 12px; opacity: .65; }
+
+    /* Celebration design helpers */
+    .gold-gradient{
+      background: linear-gradient(90deg,#ffd700,#ff9f43,#ffd700);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      font-weight: 800;
+      letter-spacing: .2px;
+      text-shadow: 0 10px 25px rgba(255,215,0,.12);
+    }
+    .celebrate-sub{
+      margin-top: 10px;
+      font-size: 16.5px;
+      line-height: 1.5;
+      color: rgba(255,255,255,.82);
+    }
+    .celebrate-line{
+      margin-top: 12px;
+      font-size: 13.5px;
+      opacity: .85;
+    }
+    .divider{
+      margin: 14px auto 0;
+      width: min(420px, 100%);
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="tap-banner" id="tapBanner">Tap once to start the music 🎵</div>
+  <canvas id="fx"></canvas>
+
+  <!-- Upload these to your repo:
+       assets/bye2025_telugu.mp3
+       assets/welcome2026_hindi.mp3
+       assets/happy2026_festive_hindi.mp3
+       assets/resolutions2026_soft_music.mp3
+  -->
+  <audio id="song2025" preload="auto" loop>
+    <source src="assets/bye2025_telugu.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- 2026 slide-1 -->
+  <audio id="song2026" preload="auto" loop>
+    <source src="assets/welcome2026_hindi.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- 2026 slide-2 -->
+  <audio id="song2026_happy" preload="auto" loop>
+    <source src="assets/happy2026_festive_hindi.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- 2026 slide-3 -->
+  <audio id="song2026_res" preload="auto" loop>
+    <source src="assets/resolutions2026_soft_music.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="dialog" id="box" role="dialog" aria-modal="true">
+    <h1 id="title">👋 Bye bye 2025</h1>
+    <p id="msg">Thank you for growth, learning & impact.</p>
+    <div class="small" id="hint">Our 2025 tools & books will rise… gently 🎈</div>
+    <div class="pill"><span>⏳</span><span id="pillText">Starting…</span></div>
+  </div>
+
+<script>
+/* ================= CONFIG ================= */
+const VOLUME_2025 = 0.35;
+const VOLUME_2026 = 0.35;
+
+const CYCLE_SECONDS = 7.6;
+const CYCLES = 2;
+const STAGGER_MS = 1150;
+
+const START_AFTER_MS_2025 = 1900;
+const START_AFTER_MS_2026 = 1400;
+
+const HAPPY_SCREEN_MS = 10000;  // keep Happy New Year screen longer
+const CLOSE_AFTER_MS = 28000;   // keep Resolutions screen longer
+
+/* ============== Personalization ============== */
+const params = new URLSearchParams(location.search);
+const rawName = params.get("name") || "";
+const safeName = rawName.replace(/[<>]/g, "").trim().slice(0, 30);
+const nameSuffix = safeName ? `, ${safeName}` : "";
+
+/* ================== AUDIO (4 tracks) ================== */
+const tapBanner = document.getElementById("tapBanner");
+
+const song2025       = document.getElementById("song2025");        // Telugu (2025)
+const song2026_intro = document.getElementById("song2026");        // 2026 slide-1
+const song2026_happy = document.getElementById("song2026_happy");  // 2026 slide-2
+const song2026_res   = document.getElementById("song2026_res");    // 2026 slide-3
+
+[song2025, song2026_intro, song2026_happy, song2026_res].forEach(a => a.volume = VOLUME_2026);
+song2025.volume = VOLUME_2025;
+
+function stop(audio){
+  try{ audio.pause(); audio.currentTime = 0; }catch(e){}
+}
+function stopAll(){
+  [song2025, song2026_intro, song2026_happy, song2026_res].forEach(stop);
+}
+async function playFromStart(audio){
+  stop(audio);
+  return audio.play();
+}
+async function playOnly(audio){
+  stopAll();
+  try{
+    await playFromStart(audio);
+    tapBanner.style.display = "none";
+  }catch(e){
+    tapBanner.style.display = "block";
+  }
+}
+
+window.__scene = "2025"; // used for tap-to-unlock behavior
+
+// Autoplay best-effort: Telugu starts at 0:00
+playOnly(song2025);
+
+// On tap, start the current scene's song from beginning
+window.addEventListener("pointerdown", async () => {
+  tapBanner.style.display = "none";
+  if (window.__scene === "2025") await playOnly(song2025);
+  if (window.__scene === "2026_intro") await playOnly(song2026_intro);
+  if (window.__scene === "2026_happy") await playOnly(song2026_happy);
+  if (window.__scene === "2026_res") await playOnly(song2026_res);
+});
+
+/* ================= Fireworks ================= */
+const canvas = document.getElementById("fx");
+const ctx = canvas.getContext("2d");
+
+function resize(){
+  canvas.width = Math.floor(innerWidth * devicePixelRatio);
+  canvas.height = Math.floor(innerHeight * devicePixelRatio);
+}
+addEventListener("resize", resize);
+resize();
+
+let particles = [];
+function burst(x, y){
+  const count = 70 + Math.floor(Math.random() * 50);
+  for (let i = 0; i < count; i++){
+    const a = Math.random() * Math.PI * 2;
+    const s = 2.0 + Math.random() * 6.0;
+    particles.push({
+      x,y,
+      vx:Math.cos(a)*s,
+      vy:Math.sin(a)*s,
+      life:95+Math.random()*60,
+      hue:Math.random()*360,
+      r:1.4+Math.random()*2.0
+    });
+  }
+}
+function draw(){
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (Math.random() < 0.055){
+    const x = (0.12 + Math.random() * 0.76) * canvas.width;
+    const y = (0.10 + Math.random() * 0.38) * canvas.height;
+    burst(x, y);
+  }
+  particles = particles.filter(p => p.life > 0);
+  for (const p of particles){
+    p.life -= 1; p.vy += 0.035; p.x += p.vx; p.y += p.vy; p.vx *= 0.99; p.vy *= 0.99;
+    const a = Math.max(0, p.life / 150);
+    ctx.fillStyle = `hsla(${p.hue}, 95%, 62%, ${a})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r * devicePixelRatio, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+addEventListener("pointerdown", (e) => burst(e.clientX * devicePixelRatio, e.clientY * devicePixelRatio));
+
+/* ================= Items (2025 + 2026) ================= */
+const items2025 = [
+  { icon: "🧩", text: "Functional Mate" },
+  { icon: "🧠", text: "AI TestCase & Script Generator Tool" },
+  { icon: "📄", text: "PDF Comparison Tool" },
+  { icon: "📊", text: "Encova ServiceNow Dashboard" },
+  { icon: "📚", text: "Fundamentals of Quantum Computing (Book)" },
+  { icon: "📘", text: "Understanding Intellectual Property (Book)" }
+];
+
+const items2026 = [
+  { icon: "🧠", text: "AI-Driven Resume Orchestrator" },
+  { icon: "🧪", text: "Self-Healing Test Suite Enhancer" },
+  { icon: "📑", text: "Katalon Frameworks for UI/API Automation" },
+  { icon: "📈", text: "Unified QA Metrics Dashboard" },
+  { icon: "📗", text: "AI in Test Automation (Book)" },
+  { icon: "📙", text: "Guidewire QA Mastery" }
+];
+
+function flyItems(list, startAfterMs){
+  const positions = ["12vw","32vw","52vw","72vw"];
+  const totalMsEach = (CYCLE_SECONDS * CYCLES) * 1000 + 1000;
+
+  list.forEach((it, idx) => {
+    setTimeout(() => {
+      const el = document.createElement("div");
+      el.className = "item";
+      el.style.left = positions[idx % positions.length];
+
+      const spark = document.createElement("div");
+      spark.className = "spark";
+      spark.textContent = "✨";
+
+      el.textContent = `🎈 ${it.icon} ${it.text}`;
+      el.appendChild(spark);
+      document.body.appendChild(el);
+
+      requestAnimationFrame(() => { el.style.opacity = "0.97"; });
+
+      const swayDur = 3.0 + (idx % 4) * 0.35;
+      el.style.animation = `
+        slowBob ${CYCLE_SECONDS}s ease-in-out ${CYCLES} forwards,
+        sway ${swayDur}s ease-in-out infinite
+      `;
+
+      setTimeout(() => el.remove(), totalMsEach);
+    }, startAfterMs + idx * STAGGER_MS);
+  });
+
+  const lastStart = startAfterMs + (list.length - 1) * STAGGER_MS;
+  const lastFinish = lastStart + (CYCLE_SECONDS * CYCLES) * 1000;
+  return lastFinish;
+}
+
+/* ================= Countdown pill ================= */
+const pillText = document.getElementById("pillText");
+function countdown(label, ms){
+  let remaining = Math.max(1, Math.ceil(ms / 1000));
+  pillText.textContent = `${label} in ${remaining}s`;
+  const t = setInterval(() => {
+    remaining -= 1;
+    if (remaining <= 0){
+      clearInterval(t);
+      pillText.textContent = "Switching…";
+      return;
+    }
+    pillText.textContent = `${label} in ${remaining}s`;
+  }, 1000);
+}
+
+/* ================= Scenes ================= */
+const box = document.getElementById("box");
+const title = document.getElementById("title");
+const msg = document.getElementById("msg");
+const hint = document.getElementById("hint");
+
+/* Scene 2025 */
+const finish2025 = flyItems(items2025, START_AFTER_MS_2025);
+const switchTo2026At = finish2025 + 500;
+countdown("Welcome 2026", switchTo2026At);
+
+setTimeout(() => {
+  box.classList.add("fade-out");
+
+  setTimeout(async () => {
+    /* Scene 2026 - slide 1 (Welcome) */
+    window.__scene = "2026_intro";
+    await playOnly(song2026_intro);
+
+    title.textContent = `🎉 Welcome 2026${nameSuffix}`;
+    msg.innerHTML = `Fresh chapter. Bigger dreams. Stronger execution. ✨`;
+    hint.innerHTML = `<div class="small">New tools + new books are coming… 🎈</div>`;
+
+    box.classList.remove("fade-out");
+    box.classList.add("fade-in");
+
+    const finish2026 = flyItems(items2026, START_AFTER_MS_2026);
+
+    setTimeout(() => {
+      box.classList.add("fade-out");
+
+      setTimeout(async () => {
+        /* Scene 2026 - slide 2 (Happy New Year) */
+        window.__scene = "2026_happy";
+        await playOnly(song2026_happy);
+
+        title.innerHTML = `<span class="gold-gradient">🎊 Happy New Year 2026${nameSuffix}! 🎊</span>`;
+        msg.innerHTML = `
+          <div class="celebrate-sub">
+            Wishing everyone <b>joy</b>, <b>peace</b>, <b>success</b>,<br>
+            <b>good health</b>, and beautiful moments ahead ✨
+          </div>
+          <div class="divider"></div>
+          <div class="celebrate-line">🌟 New beginnings • New hopes • New possibilities 🌟</div>
+        `;
+        hint.innerHTML = `<div class="small">A bright year is waiting for us… 💛</div>`;
+
+        box.classList.remove("fade-out");
+        box.classList.add("fade-in");
+
+        /* Hold Happy screen longer, then go to Resolutions */
+        setTimeout(() => {
+          box.classList.add("fade-out");
+
+          setTimeout(async () => {
+            /* Scene 2026 - slide 3 (Resolutions) */
+            window.__scene = "2026_res";
+            await playOnly(song2026_res);
+
+            title.textContent = `✨ 2026 Resolutions${nameSuffix}`;
+            msg.innerHTML = `Let’s make this year meaningful, powerful, and joyful.`;
+            hint.innerHTML = `
+              <div class="res">
+                <div class="res-item">🤖✅ Build scalable automation — cleaner, faster, stronger</div>
+                <div class="res-item">🧠✨ Use AI daily — smarter test design & self-healing</div>
+                <div class="res-item">⚡🎯 Deliver with confidence — quality with speed</div>
+                <div class="res-item">📚🖊️ Write & publish — share knowledge, raise the bar</div>
+                <div class="res-item">💬🌈 Positive thoughts — calm mind, kind words, steady action</div>
+                <div class="res-item">❤️💪 Health first — consistency beats intensity</div>
+              </div>
+              <div class="footer-note">Tip: Tap anywhere for extra fireworks ✨</div>
+              <div class="small">Closing automatically…</div>
+            `;
+
+            const res = Array.from(document.querySelectorAll(".res-item"));
+            res.forEach((el,i)=> setTimeout(()=> el.classList.add("show"), 250 + i*650));
+
+            box.classList.remove("fade-out");
+            box.classList.add("fade-in");
+
+            // Auto-close after keeping resolutions longer
+            setTimeout(() => window.close(), CLOSE_AFTER_MS);
+
+          }, 1100);
+
+        }, HAPPY_SCREEN_MS);
+
+      }, 1100);
+
+    }, finish2026 + 900);
+
+  }, 1200);
+
+}, switchTo2026At);
+</script>
+</body>
+</html>
